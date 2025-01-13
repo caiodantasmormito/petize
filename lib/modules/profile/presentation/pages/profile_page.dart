@@ -51,15 +51,13 @@ class ProfilePageContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        BlocConsumer<HomeCubit, HomeState>(
-          listener: (context, state) {
+        BlocBuilder<HomeCubit, HomeState>(
+          builder: (context, state) {
             if (state is HomeError) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.message)),
               );
             }
-          },
-          builder: (context, state) {
             if (state is HomeLoading) {
               return const Center(
                 child: CircularProgressIndicator(),
@@ -122,38 +120,41 @@ class ProfilePageContent extends StatelessWidget {
                         alignment: WrapAlignment.center,
                         runSpacing: MediaQuery.of(context).size.height * 0.02,
                         children: [
-                          SvgPicture.asset('assets/vectors/company.svg'),
+                          if (state.data.company!.isNotEmpty)
+                            SvgPicture.asset('assets/vectors/company.svg'),
                           Text(
                             state.data.company.toString(),
                             style: GoogleFonts.inter(fontSize: 16),
                           ),
-                          SvgPicture.asset('assets/vectors/location.svg'),
+                          if (state.data.location!.isNotEmpty)
+                            SvgPicture.asset('assets/vectors/location.svg'),
                           Text(
                             state.data.location.toString(),
                             style: GoogleFonts.inter(fontSize: 16),
                           ),
-                          SvgPicture.asset('assets/vectors/email.svg'),
+                          if (state.data.email!.isNotEmpty)
+                            SvgPicture.asset('assets/vectors/email.svg'),
                           Text(
                             state.data.email.toString(),
                             style: GoogleFonts.inter(fontSize: 16),
                           ),
                           if (state.data.blog!.isNotEmpty)
                             SvgPicture.asset('assets/vectors/blog.svg'),
-                          if (state.data.blog!.isNotEmpty)
-                            InkWell(onTap: () {
+                          InkWell(
+                            onTap: () {
                               final url = state.data.blog!;
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => WebViewPage(url: url),
-                                  ),
-                                );
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => WebViewPage(url: url),
+                                ),
+                              );
                             },
-                              child: Text(
-                                state.data.blog.toString(),
-                                style: GoogleFonts.inter(fontSize: 16),
-                              ),
+                            child: Text(
+                              state.data.blog.toString(),
+                              style: GoogleFonts.inter(fontSize: 16),
                             ),
+                          ),
                           if (state.data.twitterUsername!.isNotEmpty)
                             SvgPicture.asset('assets/vectors/twitter.svg'),
                           if (state.data.twitterUsername!.isNotEmpty)
@@ -206,80 +207,88 @@ class ProfilePageContent extends StatelessWidget {
                 );
               }
               if (repoState is ProfileSuccess) {
-                return ListView.builder(
-                    itemCount: repoState.data.length,
-                    itemBuilder: (_, index) {
-                      final repo = repoState.data[index];
-                      DateTime updatedAt = DateTime.parse(repo.updatedAt);
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            InkWell(
-                              onTap: () {
-                                final repoName = repo.htmlUrl;
-                                final url = repoName;
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => WebViewPage(url: url),
-                                  ),
-                                );
-                              },
-                              child: Text(
-                                repo.name,
-                                style: GoogleFonts.inter(
-                                    fontSize: 20, fontWeight: FontWeight.w700),
-                              ),
-                            ),
-                            SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.016),
-                            Text(
-                              repo.description,
-                              style: GoogleFonts.inter(
-                                  fontSize: 16, fontWeight: FontWeight.w400),
-                            ),
-                            SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.016),
-                            Row(
+                return repoState.data.isEmpty
+                    ? const Text('Nenhum repositório encontrado')
+                    : ListView.builder(
+                        itemCount: repoState.data.length,
+                        itemBuilder: (_, index) {
+                          final repo = repoState.data[index];
+                          DateTime updatedAt = DateTime.parse(repo.updatedAt);
+                          return Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Icon(Icons.star_border),
-                                Text(
-                                  repo.stargazersCount.toString(),
-                                  style: GoogleFonts.inter(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w400),
+                                InkWell(
+                                  onTap: () {
+                                    final repoName = repo.htmlUrl;
+                                    final url = repoName;
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            WebViewPage(url: url),
+                                      ),
+                                    );
+                                  },
+                                  child: Text(
+                                    repo.name,
+                                    style: GoogleFonts.inter(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w700),
+                                  ),
                                 ),
                                 SizedBox(
-                                    width: MediaQuery.of(context).size.width *
+                                    height: MediaQuery.of(context).size.height *
                                         0.016),
                                 Text(
-                                  '•',
+                                  repo.description,
                                   style: GoogleFonts.inter(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w400),
                                 ),
                                 SizedBox(
-                                    width: MediaQuery.of(context).size.width *
+                                    height: MediaQuery.of(context).size.height *
                                         0.016),
-                                Text(
-                                  'Atualizado há ${_getDaysAgo(updatedAt)} dias',
-                                  style: GoogleFonts.inter(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w400),
+                                Row(
+                                  children: [
+                                    const Icon(Icons.star_border),
+                                    Text(
+                                      repo.stargazersCount.toString(),
+                                      style: GoogleFonts.inter(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w400),
+                                    ),
+                                    SizedBox(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.016),
+                                    Text(
+                                      '•',
+                                      style: GoogleFonts.inter(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w400),
+                                    ),
+                                    SizedBox(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.016),
+                                    Text(
+                                      'Atualizado há ${_getDaysAgo(updatedAt)} dias',
+                                      style: GoogleFonts.inter(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w400),
+                                    ),
+                                  ],
                                 ),
+                                const Divider(),
                               ],
                             ),
-                            const Divider(),
-                          ],
-                        ),
-                      );
-                    });
+                          );
+                        });
               }
-              return const Text('data');
+              return const SizedBox.shrink();
             },
           ),
         )
