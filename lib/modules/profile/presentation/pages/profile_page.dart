@@ -64,85 +64,106 @@ class ProfilePageContent extends StatelessWidget {
               );
             }
             if (state is HomeSuccess) {
-              return SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      ListTile(
-                        title: Text(
-                          state.data.name,
-                          style: GoogleFonts.inter(fontSize: 20),
-                        ),
-                        subtitle: Text(
-                          '@${state.data.login}',
+              return Container(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                height: MediaQuery.of(context).size.height * 0.3,
+                color: const Color(0x99eaddff),
+                child: Column(
+                  children: [
+                    ListTile(
+                      title: Text(
+                        state.data.name,
+                        style: GoogleFonts.inter(fontSize: 20),
+                      ),
+                      subtitle: Text(
+                        '@${state.data.login}',
+                        style: GoogleFonts.inter(fontSize: 16),
+                      ),
+                      leading: CircleAvatar(
+                        radius: 30,
+                        foregroundImage: NetworkImage(state.data.avatarUrl),
+                      ),
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.01,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        SvgPicture.asset('assets/vectors/peoples.svg'),
+                        Text(
+                          '${state.data.followers} seguidores',
                           style: GoogleFonts.inter(fontSize: 16),
                         ),
-                        leading: CircleAvatar(
-                          radius: 30,
-                          foregroundImage: NetworkImage(state.data.avatarUrl),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.05,
                         ),
-                      ),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.01,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          SvgPicture.asset('assets/vectors/peoples.svg'),
-                          Text(
-                            '${state.data.followers} seguidores',
+                        SvgPicture.asset('assets/vectors/heart.svg'),
+                        Text(
+                          '${state.data.following} seguindo',
+                          style: GoogleFonts.inter(fontSize: 16),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.02,
+                    ),
+                    Text(
+                      state.data.bio.toString(),
+                      style: GoogleFonts.inter(fontSize: 18),
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.02,
+                    ),
+                    Wrap(
+                      spacing: MediaQuery.of(context).size.width * 0.02,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      alignment: WrapAlignment.center,
+                      runSpacing: MediaQuery.of(context).size.height * 0.02,
+                      children: [
+                        if (state.data.company!.isNotEmpty)
+                          SvgPicture.asset('assets/vectors/company.svg'),
+                        Text(
+                          state.data.company.toString(),
+                          style: GoogleFonts.inter(fontSize: 16),
+                        ),
+                        if (state.data.location!.isNotEmpty)
+                          SvgPicture.asset('assets/vectors/location.svg'),
+                        Text(
+                          state.data.location.toString(),
+                          style: GoogleFonts.inter(fontSize: 16),
+                        ),
+                        if (state.data.email!.isNotEmpty)
+                          SvgPicture.asset('assets/vectors/email.svg'),
+                        Text(
+                          state.data.email.toString(),
+                          style: GoogleFonts.inter(fontSize: 16),
+                        ),
+                        if (state.data.blog!.isNotEmpty)
+                          SvgPicture.asset('assets/vectors/blog.svg'),
+                        InkWell(
+                          onTap: () {
+                            final url = state.data.blog!;
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => WebViewPage(url: url),
+                              ),
+                            );
+                          },
+                          child: Text(
+                            state.data.blog.toString(),
                             style: GoogleFonts.inter(fontSize: 16),
                           ),
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.05,
-                          ),
-                          SvgPicture.asset('assets/vectors/heart.svg'),
-                          Text(
-                            '${state.data.following} seguindo',
-                            style: GoogleFonts.inter(fontSize: 16),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.02,
-                      ),
-                      Text(
-                        state.data.bio.toString(),
-                        style: GoogleFonts.inter(fontSize: 18),
-                      ),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.02,
-                      ),
-                      Wrap(
-                        spacing: MediaQuery.of(context).size.width * 0.02,
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        alignment: WrapAlignment.center,
-                        runSpacing: MediaQuery.of(context).size.height * 0.02,
-                        children: [
-                          if (state.data.company!.isNotEmpty)
-                            SvgPicture.asset('assets/vectors/company.svg'),
-                          Text(
-                            state.data.company.toString(),
-                            style: GoogleFonts.inter(fontSize: 16),
-                          ),
-                          if (state.data.location!.isNotEmpty)
-                            SvgPicture.asset('assets/vectors/location.svg'),
-                          Text(
-                            state.data.location.toString(),
-                            style: GoogleFonts.inter(fontSize: 16),
-                          ),
-                          if (state.data.email!.isNotEmpty)
-                            SvgPicture.asset('assets/vectors/email.svg'),
-                          Text(
-                            state.data.email.toString(),
-                            style: GoogleFonts.inter(fontSize: 16),
-                          ),
-                          if (state.data.blog!.isNotEmpty)
-                            SvgPicture.asset('assets/vectors/blog.svg'),
+                        ),
+                        if (state.data.twitterUsername!.isNotEmpty)
+                          SvgPicture.asset('assets/vectors/twitter.svg'),
+                        if (state.data.twitterUsername!.isNotEmpty)
                           InkWell(
                             onTap: () {
-                              final url = state.data.blog!;
+                              final twitterUsername =
+                                  state.data.twitterUsername;
+                              final url = 'https://x.com/$twitterUsername';
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -151,34 +172,13 @@ class ProfilePageContent extends StatelessWidget {
                               );
                             },
                             child: Text(
-                              state.data.blog.toString(),
+                              '@${state.data.twitterUsername.toString()}',
                               style: GoogleFonts.inter(fontSize: 16),
                             ),
                           ),
-                          if (state.data.twitterUsername!.isNotEmpty)
-                            SvgPicture.asset('assets/vectors/twitter.svg'),
-                          if (state.data.twitterUsername!.isNotEmpty)
-                            InkWell(
-                              onTap: () {
-                                final twitterUsername =
-                                    state.data.twitterUsername;
-                                final url = 'https://x.com/$twitterUsername';
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => WebViewPage(url: url),
-                                  ),
-                                );
-                              },
-                              child: Text(
-                                '@${state.data.twitterUsername.toString()}',
-                                style: GoogleFonts.inter(fontSize: 16),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  ],
                 ),
               );
             }
@@ -190,6 +190,9 @@ class ProfilePageContent extends StatelessWidget {
               ),
             );
           },
+        ),
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.02,
         ),
         Expanded(
           child: BlocConsumer<ProfileCubit, ProfileState>(
