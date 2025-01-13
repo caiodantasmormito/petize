@@ -12,7 +12,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late final TextEditingController userNameController;
-  late final FocusNode _userNameFocus;
+  late final FocusNode userNameFocus;
   final GlobalKey _textFieldKey = GlobalKey();
   List<String> recentSearches = [];
   OverlayEntry? overlayEntry;
@@ -21,9 +21,9 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     userNameController = TextEditingController();
-    _userNameFocus = FocusNode()
+    userNameFocus = FocusNode()
       ..addListener(() {
-        if (_userNameFocus.hasFocus && recentSearches.isNotEmpty) {
+        if (userNameFocus.hasFocus && recentSearches.isNotEmpty) {
           _showSuggestions();
         } else {
           _hideSuggestions();
@@ -35,7 +35,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     userNameController.dispose();
-    _userNameFocus.dispose();
+    userNameFocus.dispose();
     _hideSuggestions();
     super.dispose();
   }
@@ -80,7 +80,7 @@ class _HomePageState extends State<HomePage> {
                 child: TextFormField(
                   key: _textFieldKey,
                   controller: userNameController,
-                  focusNode: _userNameFocus,
+                  focusNode: userNameFocus,
                   decoration: InputDecoration(
                     label: const Text('Label'),
                     labelStyle: GoogleFonts.roboto(fontWeight: FontWeight.w400),
@@ -96,7 +96,8 @@ class _HomePageState extends State<HomePage> {
                         if (userNameController.text.isNotEmpty) {
                           final search = userNameController.text.trim();
                           _saveSearch(search);
-                          Modular.to.pushNamed('/profile/$search');
+                          Modular.to
+                              .pushNamed('/profile/${userNameController.text}');
                         }
                       },
                     ),

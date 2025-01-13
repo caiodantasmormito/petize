@@ -1,4 +1,5 @@
 import 'package:challenge_petize/core/domain/widgets/web_view.dart';
+import 'package:challenge_petize/modules/home/domain/usecase/home_usecase.dart';
 import 'package:challenge_petize/modules/home/presentation/cubit/home_cubit.dart';
 import 'package:challenge_petize/modules/profile/presentation/cubit/profile_cubit.dart';
 import 'package:flutter/material.dart';
@@ -29,9 +30,10 @@ class _ProfilePageState extends State<ProfilePage> {
       backgroundColor: Colors.white,
       body: MultiBlocProvider(
         providers: [
-          BlocProvider(
-            create: (_) =>
-                Modular.get<HomeCubit>()..getUser(username: widget.username),
+          BlocProvider<HomeCubit>(
+            create: (_) => HomeCubit(
+              useCase: Modular.get<HomeUseCase>(),
+            )..getUser(username: widget.username),
           ),
           BlocProvider(
             create: (_) => Modular.get<ProfileCubit>()
@@ -44,20 +46,27 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 }
 
-class ProfilePageContent extends StatelessWidget {
+class ProfilePageContent extends StatefulWidget {
   const ProfilePageContent({super.key});
 
+  @override
+  State<ProfilePageContent> createState() => _ProfilePageContentState();
+}
+
+class _ProfilePageContentState extends State<ProfilePageContent> {
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        BlocBuilder<HomeCubit, HomeState>(
-          builder: (context, state) {
+        BlocConsumer<HomeCubit, HomeState>(
+          listener: (context, state) {
             if (state is HomeError) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.message)),
+                SnackBar(content: Text(state.message.toString())),
               );
             }
+          },
+          builder: (context, state) {
             if (state is HomeLoading) {
               return const Center(
                 child: CircularProgressIndicator(),
